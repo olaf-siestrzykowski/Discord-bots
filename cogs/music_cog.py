@@ -94,7 +94,8 @@ class music_cog(commands.Cog):
             if type(song) == type(True):
                 await ctx.send("Could not download the song. Incorrect format try another keyword. This could be due to playlist or a livestream format.")
             else:
-                await ctx.send({song} + "added to the queue")
+                await ctx.send(song['title']+" added to the queue")
+                print(song['title'])
                 self.music_queue.append([song, voice_channel])
 
                 if self.is_playing == False:
