@@ -20,7 +20,6 @@ General commands:
 """
         self.text_channel_list = []
 
-
     #some debug info so that we know the bot has started
     @commands.Cog.listener()
     async def on_ready(self):
@@ -35,9 +34,8 @@ General commands:
         await ctx.send(self.help_message)
 
     async def send_to_all(self, msg):
-        for text_channel in self.text_channel_list:
-            await text_channel.send(msg)
+        await self.text_channel_list[0].send(msg)
 
 
-def setup(bot):
-    bot.add_cog(help_cog(bot))
+async def setup(bot):
+    await bot.add_cog(help_cog(bot))

@@ -11,7 +11,17 @@ class music_cog(commands.Cog):
         self.is_paused = False
 
         self.music_queue = []
-        self.YDL_OPTIONS = {'format': 'bestaudio', 'noplaylist': 'True'}
+        self.YDL_OPTIONS = {'format': 'bestaudio/best',
+                            'restrictfilenames': True,
+                            'noplaylist': True,
+                            'nocheckcertificate': True,
+                            'ignoreerrors': False,
+                            'logtostderr': False,
+                            'quiet': True,
+                            'no_warnings': True,
+                            'default_search': 'auto',
+                            'source_address': '0.0.0.0'}
+
         self.FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
 
         self.vc = None
@@ -69,7 +79,7 @@ class music_cog(commands.Cog):
         else:
             self.is_playing = False
 
-    @commands.command(name="play", aliases=["p", "playing", "play"], help="Plays a selected song from youtube")
+    @commands.command(name="play", aliases=["p", "playing"], help="Plays a selected song from youtube")
     async def play(self, ctx, *args):
         query = " ".join(args)
 
@@ -84,7 +94,7 @@ class music_cog(commands.Cog):
             if type(song) == type(True):
                 await ctx.send("Could not download the song. Incorrect format try another keyword. This could be due to playlist or a livestream format.")
             else:
-                await ctx.send("Song added to the queue")
+                await ctx.send({song} + "added to the queue")
                 self.music_queue.append([song, voice_channel])
 
                 if self.is_playing == False:
@@ -101,21 +111,21 @@ class music_cog(commands.Cog):
             self.is_playing = True
             self.vc.resume()
 
-    @commands.command(name = "resume", aliases=["r", "resume"], help="Resumes playing with the discord bot")
+    @commands.command(name="resume", aliases=["r"], help="Resumes playing with the discord bot")
     async def resume(self, ctx, *args):
         if self.is_paused:
             self.is_paused = False
             self.is_playing = True
             self.vc.resume()
 
-    @commands.command(name="skip", aliases=["s", "skip"], help="Skips the current song being played")
+    @commands.command(name="skip", aliases=["s"], help="Skips the current song being played")
     async def skip(self, ctx):
         if self.vc != None and self.vc:
             self.vc.stop()
             #try to play next in the queue if it exists
             await self.play_music(ctx)
 
-    @commands.command(name="queue", aliases=["q", "kolejka", "queue"], help="Displays the current songs in queue")
+    @commands.command(name="queue", aliases=["q", "kolejka"], help="Displays the current songs in queue")
     async def queue(self, ctx):
         retval = ""
         for i in range(0, len(self.music_queue)):
@@ -128,19 +138,19 @@ class music_cog(commands.Cog):
         else:
             await ctx.send("No music in queue")
 
-    @commands.command(name="clear", aliases=["c", "clear"], help="Stops the music and clears the queue")
+    @commands.command(name="clear", aliases=["c"], help="Stops the music and clears the queue")
     async def clear(self, ctx):
         if self.vc != None and self.is_playing:
             self.vc.stop()
         self.music_queue = []
         await ctx.send("Music queue cleared")
 
-    @commands.command(name="leave", aliases=["disconnect", "l", "d", "leave"], help="Kick the bot from VC")
+    @commands.command(name="leave", aliases=["disconnect", "l", "d"], help="Kick the bot from VC")
     async def dc(self, ctx):
         self.is_playing = False
         self.is_paused = False
         await self.vc.disconnect()
 
 
-def setup(bot):
-    bot.add_cog(music_cog(bot))
+async def setup(bot):
+    await bot.add_cog(music_cog(bot))
