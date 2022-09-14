@@ -1,6 +1,23 @@
 import discord
-from discord.ext import commands
+from discord.ext import commands, tasks
 from youtube_dl import YoutubeDL
+from discord.voice_client import VoiceClient
+
+
+class VolumeTooLow(commands.CommandError):
+    pass
+
+
+class VolumeTooHigh(commands.CommandError):
+    pass
+
+
+class MaxVolume(commands.CommandError):
+    pass
+
+
+class MinVolume(commands.CommandError):
+    pass
 
 
 class music_cog(commands.Cog):
@@ -11,24 +28,11 @@ class music_cog(commands.Cog):
         self.is_paused = False
 
         self.music_queue = []
-        self.YDL_OPTIONS = {'format': 'bestaudio/best',
-                            'restrictfilenames': True,
-                            'noplaylist': True,
-                            'nocheckcertificate': True,
-                            'ignoreerrors': False,
-                            'logtostderr': False,
-                            'quiet': True,
-                            'no_warnings': True,
-                            'default_search': 'auto',
-                            'source_address': '0.0.0.0'}
+        self.YDL_OPTIONS = {'format': 'bestaudio'}
 
         self.FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
 
         self.vc = None
-
-        @bot.event
-        async def on_ready(self):
-            print('Bot is online')
 
      #searching the item on youtube
     def search_yt(self, item):
@@ -92,7 +96,8 @@ class music_cog(commands.Cog):
         else:
             song = self.search_yt(query)
             if type(song) == type(True):
-                await ctx.send("Could not download the song. Incorrect format try another keyword. This could be due to playlist or a livestream format.")
+                print(song)
+                await ctx.send("Could not download the song. This could be due to age restrictions, being playlist or a livestream format.")
             else:
                 await ctx.send(song['title']+" added to the queue")
                 print(song['title'])
@@ -151,6 +156,18 @@ class music_cog(commands.Cog):
         self.is_playing = False
         self.is_paused = False
         await self.vc.disconnect()
+
+    def is_connected(self, ctx):
+        voice_client = ctx.message.guild.voice_client
+        return voice_client and voice_client.is_connected()
+
+    @commands.command(name='volume', aliases=['v', 'vol'], help='This command changes the bots volume')
+    async def volume(self, ctx, volume: int):
+        if ctx.voice_client is None:
+            return await ctx.send("Not connected to a voice channel.")
+
+        ctx.guild.voice_client.source.volume = volume/100
+        await ctx.send(f"Changed volume to {volume}%")
 
 
 async def setup(bot):

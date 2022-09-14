@@ -15,6 +15,11 @@ bot = commands.Bot(command_prefix='/', intents=intents, help_command=None)
 bot.remove_command('help')
 
 
+@bot.event
+async def on_ready():
+    print('Bot is online')
+
+
 async def load():
     for filename in os.listdir('./cogs'):
         if filename.endswith('.py'):
