@@ -3,7 +3,6 @@ import os
 from dotenv import load_dotenv
 from discord.ext import commands
 import asyncio
-import ffmpeg
 
 load_dotenv()
 TOKEN = os.getenv('TOKEN')
@@ -32,6 +31,5 @@ async def load():
 async def main():
     await load()
     await bot.start(TOKEN)
-#bot.run(TOKEN)
 
 asyncio.run(main())
