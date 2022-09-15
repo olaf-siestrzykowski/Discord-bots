@@ -99,10 +99,12 @@ class music_cog(commands.Cog):
         if self.is_playing:
             self.is_playing = False
             self.is_paused = True
+            await ctx.send("Paused")
             self.vc.pause()
         elif self.is_paused:
             self.is_paused = False
             self.is_playing = True
+            await ctx.send("Resumed")
             self.vc.resume()
 
     @commands.command(name="resume", aliases=["r"], help="Resumes playing with the discord bot")
@@ -110,6 +112,7 @@ class music_cog(commands.Cog):
         if self.is_paused:
             self.is_paused = False
             self.is_playing = True
+            await ctx.send("Resumed")
             self.vc.resume()
 
     @commands.command(name="skip", aliases=["s"], help="Skips the current song being played")
@@ -128,7 +131,7 @@ class music_cog(commands.Cog):
             retval += self.music_queue[i][0]['title'] + "\n"
 
         if retval != "":
-            await ctx.send(retval)
+            await ctx.send("Queue:\n"+retval)
         else:
             await ctx.send("No music in queue")
 
@@ -143,6 +146,7 @@ class music_cog(commands.Cog):
     async def dc(self, ctx):
         self.is_playing = False
         self.is_paused = False
+        await ctx.send("Bye!")
         await self.vc.disconnect()
 
 
