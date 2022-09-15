@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands, tasks
 from youtube_dl import YoutubeDL
+import ffmpeg
 
 
 class music_cog(commands.Cog):
@@ -11,7 +12,12 @@ class music_cog(commands.Cog):
         self.is_paused = False
 
         self.music_queue = []
-        self.YDL_OPTIONS = {'format': 'bestaudio'}
+        self.YDL_OPTIONS = {'format': 'bestaudio/best',
+                            'postprocessors': [{
+                                'key': 'FFmpegExtractAudio',
+                                'preferredcodec': 'mp3',
+                                'preferredquality': '192'}]
+                            }
 
         self.FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
 

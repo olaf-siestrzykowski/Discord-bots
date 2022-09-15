@@ -3,6 +3,7 @@ import os
 from dotenv import load_dotenv
 from discord.ext import commands
 import asyncio
+import ffmpeg
 
 load_dotenv()
 TOKEN = os.getenv('TOKEN')
