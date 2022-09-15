@@ -4,22 +4,6 @@ from youtube_dl import YoutubeDL
 from discord.voice_client import VoiceClient
 
 
-class VolumeTooLow(commands.CommandError):
-    pass
-
-
-class VolumeTooHigh(commands.CommandError):
-    pass
-
-
-class MaxVolume(commands.CommandError):
-    pass
-
-
-class MinVolume(commands.CommandError):
-    pass
-
-
 class music_cog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -156,18 +140,6 @@ class music_cog(commands.Cog):
         self.is_playing = False
         self.is_paused = False
         await self.vc.disconnect()
-
-    def is_connected(self, ctx):
-        voice_client = ctx.message.guild.voice_client
-        return voice_client and voice_client.is_connected()
-
-    @commands.command(name='volume', aliases=['v', 'vol'], help='This command changes the bots volume')
-    async def volume(self, ctx, volume: int):
-        if ctx.voice_client is None:
-            return await ctx.send("Not connected to a voice channel.")
-
-        ctx.guild.voice_client.source.volume = volume/100
-        await ctx.send(f"Changed volume to {volume}%")
 
 
 async def setup(bot):
