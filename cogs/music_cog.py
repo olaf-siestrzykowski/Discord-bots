@@ -1,7 +1,6 @@
 import discord
 from discord.ext import commands, tasks
 from youtube_dl import YoutubeDL
-from discord.voice_client import VoiceClient
 
 
 class music_cog(commands.Cog):
